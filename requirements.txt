@@ -1,0 +1,6 @@
+numpy
+pandas
+matplotlib
+scipy
+hipersim @ git+https://gitlab.windenergy.dtu.dk/HiperSim/hipersim.git
+pytest
