@@ -16,3 +16,5 @@ The tool:
 git clone https://github.com/arash7444/Contraint_turb_tool.git
 cd Contraint_turb_tool
 pip install -e .    # installs constraint_turb_tool in editable mode
+```
+Now you can use the exampl.py located at "example folder to test the code.
