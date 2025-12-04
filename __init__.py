@@ -5,7 +5,7 @@ Generate constrained Mann turbulence boxes from LiDAR / Met Mast measurements
 using Hipersim 
 """
 
-from .core import (
+from constraint_turb_tool.constraint_turb_v5 import (
     read_matfile,
     find_ws_columns_and_heights,
     prepare_multilevel_timeseries,

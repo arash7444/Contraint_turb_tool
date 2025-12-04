@@ -5,7 +5,7 @@ Tools to generate LiDAR/metmast-constrained Mann turbulence boxes
 using Hipersim's MannTurbulenceField.
 """
 
-from .constraint_turb_v5 import (
+from constraint_turb_tool.constraint_turb_v5 import (
     read_matfile,
     find_ws_columns_and_heights,
     prepare_multilevel_timeseries,
