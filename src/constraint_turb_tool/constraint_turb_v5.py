@@ -27,34 +27,6 @@ if "cfloat" not in ntypes.sctypeDict:
     ntypes.sctypeDict["cfloat"] = np.complex128
 
 
-# ================================================================
-# 1. USER INPUT SECTION  (edit for your case)
-# ================================================================
-
-MAT_FILE = r"C:\Users\12650009\ArashData\Projects\47_Measurement_LoadValidation\Measurement_data\Mat_files\New folder\H2A_2025-07-07_16-10-00.mat"
-
-# indices of L_WS_ columns to use (after sorting)
-# e.g. if df columns contain: L_WS_44, L_WS_75, L_WS_100, L_WS_125, ...
-# and you want 75, 125, 175 m, you can use [1, 3, 5]
-WS_COL_INDICES = [1, 3, 5]
-
-BLOCK_DURATION_MIN = 10       # length of segment to use
-HUB_HEIGHT = 125              # height used for Taylor advection U_mean_ref
-
-# Mann box parameters
-NX, NY, NZ = 4096, 32, 32
-DX, DY, DZ = 2.0, 10.0, 5.0   # DZ chosen so Lz >= max(height)
-
-# Output options
-EXPORT_FOLDER_BLADED_CON   = "./constraint_wind/bladed_con"
-EXPORT_FOLDER_BLADED_NOCON = "./constraint_wind/bladed_NoCon"
-EXPORT_FOLDER_HAWC2_CON    = "./constraint_wind/HAWC2_con"
-EXPORT_FOLDER_HAWC2_NOCON  = "./constraint_wind/HAWC2_NoCon"
-
-BLADED_U_MEAN_FOR_EXPORT = 9.0      # for .wnd
-HAWC2_WSP_FOR_EXPORT     = 6.8      # wind.wsp
-HAWC2_CENTER_POS0        = (0, 0, -125)
-
 
 # ================================================================
 # 2. Helper functions
@@ -161,7 +133,7 @@ def prepare_multilevel_timeseries(df: pd.DataFrame,
     return times, ws_cols, heights, U_mean_h, u_prime_h
 
 
-def generate_mann_fields():
+def generate_mann_fields(NX, NY, NZ,DX, DY, DZ):
     """
     Generate unconstrained and constrained Mann boxes with the same parameters.
     """
@@ -208,6 +180,7 @@ def build_constraints(mtf_con,
                       heights,
                       U_mean_h,
                       u_prime_h,
+                      NX, NY, NZ,DX, DY, DZ,
                       hub_height):
     """
     Build constraint array for all heights, using Taylor's hypothesis with
@@ -296,7 +269,7 @@ def verify_per_height(mtf_con, x_pos, y_pos, heights, u_prime_h):
     return results
 
 
-def plot_multilevel(mtf_con, x_pos, t_rel, y_pos, heights, u_prime_h,
+def plot_multilevel(mtf_con, x_pos, t_rel, y_pos, heights, u_prime_h,NX, NY, NZ,DX, DY, DZ,
                     upsample_for_plot=True, upsample_factor=10):
     """
     Quick visual check: LiDAR/SCADA u'(t) vs constrained u'(t) at each height.
@@ -404,6 +377,42 @@ def export_boxes(mtf_con, mtf_nocon, U_mean_ref):
 # ================================================================
 if __name__ == "__main__":
 
+
+    # ================================================================
+    # 1. USER INPUT SECTION  (edit for your case)
+    # ================================================================
+
+    MAT_FILE = r"C:\Users\12650009\ArashData\Projects\47_Measurement_LoadValidation\Measurement_data\Mat_files\New folder\H2A_2025-07-07_16-10-00.mat"
+
+    # indices of L_WS_ columns to use (after sorting)
+    # e.g. if df columns contain: L_WS_44, L_WS_75, L_WS_100, L_WS_125, ...
+    # and you want 75, 125, 175 m, you can use [1, 3, 5]
+    WS_COL_INDICES = [1, 3, 5]
+
+    BLOCK_DURATION_MIN = 10       # length of segment to use
+    HUB_HEIGHT = 125              # height used for Taylor advection U_mean_ref
+
+    # Mann box parameters
+    NX, NY, NZ = 4096, 32, 32
+    DX, DY, DZ = 2.0, 10.0, 5.0   # DZ chosen so Lz >= max(height)
+
+    # Output options
+    EXPORT_FOLDER_BLADED_CON   = "./constraint_wind/bladed_con"
+    EXPORT_FOLDER_BLADED_NOCON = "./constraint_wind/bladed_NoCon"
+    EXPORT_FOLDER_HAWC2_CON    = "./constraint_wind/HAWC2_con"
+    EXPORT_FOLDER_HAWC2_NOCON  = "./constraint_wind/HAWC2_NoCon"
+
+    BLADED_U_MEAN_FOR_EXPORT = 9.0      # for .wnd
+    HAWC2_WSP_FOR_EXPORT     = 6.8      # wind.wsp
+    HAWC2_CENTER_POS0        = (0, 0, -125)
+
+
+
+
+
+
+
+
     # --- Read MAT file ---
     df_raw = read_matfile(MAT_FILE)
     ws_cols_all, heights_all = find_ws_columns_and_heights(df_raw)
@@ -425,7 +434,7 @@ if __name__ == "__main__":
               f"falling back to {hub_height} m")
 
     # --- Generate Mann boxes ---
-    mtf_nocon, mtf_con = generate_mann_fields()
+    mtf_nocon, mtf_con = generate_mann_fields(NX, NY, NZ,DX, DY, DZ)
 
     # --- Build & apply constraints ---
     x_pos, t_rel, y_pos, constraints_all = build_constraints(
@@ -434,6 +443,7 @@ if __name__ == "__main__":
         heights,
         U_mean_h,
         u_prime_h,
+        NX, NY, NZ,DX, DY, DZ,
         hub_height,
     )
 

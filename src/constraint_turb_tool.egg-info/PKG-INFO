@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: constraint_turb_tool
+Version: 0.1.0
+Summary: Generate constrained Mann turbulence boxes from LiDAR/Met Mast using Hipersim
+Author: Arash Atasen
+Requires-Python: >=3.9
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: matplotlib
+Requires-Dist: scipy
+Requires-Dist: hipersim@ git+https://gitlab.windenergy.dtu.dk/HiperSim/hipersim.git
+Dynamic: author
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
